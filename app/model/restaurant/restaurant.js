@@ -1,4 +1,5 @@
 const { getDb } = require('../../db-conn/db-conn');
+const { ObjectId } = require('mongodb');
 
 exports.create = async (reqParams, file) => {
     try {
@@ -19,23 +20,37 @@ exports.create = async (reqParams, file) => {
 }
 exports.get = async (reqParams) => {
     try {
-        const res_id = reqParams['res_id']
+        const res_id = reqParams['res_id'];
         const db = getDb();
         const collection = db.collection(TBL_RESTAURANTS);
-        const result = await collection.find(res_id).sort({ restaurant_name: 1 }).toArray();
+
+        // Convert res_id to ObjectId
+        const result = await collection.find({ '_id': new ObjectId(res_id) }).sort({ restaurant_name: 1 }).toArray();
+
         if (result.length > 0) {
             result.forEach((obj) => {
                 const imageData = obj['res_logo'];
-                const base64Image = imageData.toString('base64');
-                obj['res_logo'] = `data:image/png;base64,${base64Image}`;
-                obj['res_id'] = obj['_id']
+
+                // Check if imageData is a Buffer before converting to base64
+                if (imageData) {
+                    const base64Image = imageData.toString('base64');
+                    obj['res_logo'] = `data:image/png;base64,${base64Image}`;
+                } else {
+                    obj['res_logo'] = null; // or set to a placeholder image if desired
+                }
+
+                obj['res_id'] = obj['_id'];
             });
+        } else {
+            return { status: false, msg: "Restaurant not found" };
         }
-        return { status: true, data: result[0] }
+
+        return { status: true, data: result[0] };
     } catch (error) {
-        throw error
+        console.error('Error fetching restaurant data:', error); // Log the error for debugging
+        return { status: false, msg: "Internal server error", error: error.message }; // Return structured error response
     }
-}
+};
 exports.details = async (reqParams) => {
     try {
         const db = getDb();

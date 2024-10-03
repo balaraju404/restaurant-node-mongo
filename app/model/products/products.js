@@ -105,12 +105,9 @@ exports.details = async (reqParams) => {
         // Fetch product images concurrently
         const resProductsCollection = db.collection(TBL_PRODUCT_IMAGES);
         const product_images = await resProductsCollection.find({ product_id: { $in: result.map(r => r.product_id) } }).toArray();
-        // console.log(product_images);
 
         // Attach images to results
         result.forEach((obj) => {
-            console.log(obj['product_id']);
-
             obj['images'] = product_images.filter((img) => img['product_id'].toString() === obj['product_id'].toString());
         });
 

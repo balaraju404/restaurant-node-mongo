@@ -18,7 +18,7 @@ exports.get = async (req, res, next) => {
         const reqParams = req['params'] || {}
         const result = await restaurantModel.get(reqParams);
         if (result['data']) {
-            res.status(200).json({ status: result['status'], data: result['data'] })
+            res.status(200).json({ status: result['status'], data: result['data'] || {} })
         } else {
             res.status(200).json({ status: result['status'], msg: result['msg'] })
         }
