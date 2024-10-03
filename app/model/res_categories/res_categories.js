@@ -36,6 +36,11 @@ exports.details = async (reqParams) => {
                 $match: { 'res_id': res_id }
             },
             {
+                $addFields: {
+                    cat_id: { $toObjectId: "$cat_id" },
+                }
+            },
+            {
                 $lookup: {
                     from: TBL_CATEGORIES,
                     localField: 'cat_id',
@@ -48,7 +53,7 @@ exports.details = async (reqParams) => {
             },
             {
                 $project: {
-                    id: '$_id',
+                    cat_id: '$_id',
                     user_id: '$user_id',
                     res_id: '$res_id',
                     cat_name: { $ifNull: ['$cat_info.cat_name', 'Not Found'] },
