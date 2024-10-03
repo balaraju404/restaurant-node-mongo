@@ -1,15 +1,16 @@
 const { getDb } = require('../../db-conn/db-conn');
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require('mongoose').Types;
 
 exports.create = async (reqParams, file) => {
     try {
         const restaurant_name = reqParams['restaurant_name'];
+        const description = reqParams['description'];
         const res_logo = file['buffer'];
         const restaurantExists = await checkRestaurant(restaurant_name);
         if (restaurantExists) {
             return { status: false, msg: 'Restaurant name already exists' };
         }
-        const insertRec = { 'restaurant_name': restaurant_name, 'res_logo': res_logo, 'created_date': new Date(), 'modified_date': '', 'status': 1 }
+        const insertRec = { 'restaurant_name': restaurant_name, 'res_logo': res_logo, 'description': description, 'created_date': new Date(), 'modified_date': '', 'status': 1 }
         const db = getDb();
         const collection = db.collection(TBL_RESTAURANTS);
         const result = await collection.insertOne(insertRec)

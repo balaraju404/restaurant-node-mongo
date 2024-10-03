@@ -12,10 +12,22 @@ const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use(cors());
 
 // Define allowed origins from config
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+
+// Set up CORS for the Express server
+app.use(cors({
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+}));
 
 // Set up routes
 app.use('/api', routes);
@@ -37,7 +49,7 @@ mongoConnect(() => {
     const io = new Server(appServer, {
         cors: {
             origin: (origin, callback) => {
-                if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+                if (allowedOrigins.includes(origin) || !origin) {
                     callback(null, true);
                 } else {
                     callback(new Error('Not allowed by CORS'));
