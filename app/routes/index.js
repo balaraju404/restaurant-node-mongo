@@ -6,7 +6,7 @@ const assign_restaurant_users = require('./assign_restaurant_users/assign_restau
 const categories = require('./categories/categories')
 const res_categories = require('./res_categories/res_categories')
 const products = require('./products/products.js')
-// const cart = require('./cart/cart')
+const cart = require('./cart/cart.js')
 // const order = require('./order/order')
 
 routes.use('/login', login);
@@ -16,7 +16,7 @@ routes.use('/assign_restaurant_users', assign_restaurant_users)
 routes.use('/categories', categories)
 routes.use('/res_categories', res_categories)
 routes.use('/products', products)
-// routes.use('/cart', cart)
+routes.use('/cart', cart)
 // routes.use('/order', order)
 
 module.exports = routes;
