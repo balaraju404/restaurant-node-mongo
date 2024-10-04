@@ -9,7 +9,7 @@ exports.add = async (reqParams, images) => {
         const price = reqParams['price'];
         const description = reqParams['description'];
 
-        const insertRec = { 'res_id': res_id, 'cat_id': cat_id, 'product_name': product_name, 'product_img': product_img, 'price': price, 'description': description, 'created_by': '', 'created_date': new Date(), 'modified_date': new Date(), 'status': 1 };
+        const insertRec = { 'res_id': res_id, 'cat_id': cat_id, 'product_name': product_name, 'product_img': product_img, 'price': price, 'description': description, 'created_by': '', 'created_date': new Date(), 'modified_date': '', 'status': 1 };
 
         const db = getDb()
         const collection = db.collection(TBL_RESTAURANT_PRODUCTS);
