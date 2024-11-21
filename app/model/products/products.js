@@ -46,8 +46,8 @@ exports.details = async (reqParams) => {
 
         // Combine match conditions into a single object
         const matchConditions = {};
-        if (res_id > 0) matchConditions['res_id'] = res_id;
-        if (cat_id > 0) matchConditions['cat_id'] = cat_id;
+        if (res_id.length > 0) matchConditions['res_id'] = res_id;
+        if (cat_id.length > 0) matchConditions['cat_id'] = cat_id;
 
         if (Object.keys(matchConditions).length > 0) {
             pipeline.push({ $match: matchConditions });
