@@ -19,6 +19,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS
 // Set up CORS for the Express server
 app.use((req, res, next) => {
   const origin = req.headers.origin || 'default';
+  console.log(origin)
   if (!req.headers.origin || allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin || '*');
   }
