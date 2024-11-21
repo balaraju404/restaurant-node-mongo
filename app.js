@@ -17,17 +17,25 @@ app.use(express.json());
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
 
 // Set up CORS for the Express server
-app.use(cors({
+const corsOptions = {
     origin: (origin, callback) => {
-        if (allowedOrigins.includes(origin) || !origin) {
+        // Allow requests with no `Origin` (e.g., mobile apps, Postman, etc.)
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.error(`Blocked by CORS: Origin ${origin} is not allowed.`);
             callback(new Error('Not allowed by CORS'));
         }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
-}));
+    allowedHeaders: ['Content-Type', 'Authorization'], // Include Authorization if used
+    credentials: true, // Allow cookies or credentials if needed
+    optionsSuccessStatus: 200, // For legacy browsers that don’t support 204
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
 
 // Set up routes
 app.use('/api', routes);
