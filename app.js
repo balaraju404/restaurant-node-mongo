@@ -18,15 +18,15 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS
 
 // Set up CORS for the Express server
 app.use((req, res, next) => {
-  const origin = req.headers.origin || 'default';
-  console.log(origin)
-  if (!req.headers.origin || allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
+ const origin = req.headers.origin || 'default';
+ console.log(origin)
+ if (!req.headers.origin || allowedOrigins.includes(origin)) {
+  res.setHeader('Access-Control-Allow-Origin', origin || '*');
+ }
+ res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+ res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+ res.setHeader('Access-Control-Allow-Credentials', 'true');
+ next();
 });
 
 // Set up routes
@@ -36,51 +36,51 @@ const PORT = process.env.PORT || 3000;
 
 // Connect to the database
 mongoConnect(() => {
-    console.log('Database connected successfully.');
+ console.log('Database connected successfully.');
 
-    app.get('/', (req, res) => {
-        res.json({ message: 'Hello World', dbStatus: 'Connected' });
-    });
+ app.get('/', (req, res) => {
+  res.json({ message: 'Hello World', dbStatus: 'Connected' });
+ });
 
-    // Create server
-    const appServer = http.createServer(app);
+ // Create server
+ const appServer = http.createServer(app);
 
-    // Socket.IO setup with CORS
-    const io = new Server(appServer, {
-        cors: {
-            origin: (origin, callback) => {
-                if (allowedOrigins.includes(origin) || !origin) {
-                    callback(null, true);
-                } else {
-                    callback(new Error('Not allowed by CORS'));
-                }
-            },
-            methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-            allowedHeaders: ['Content-Type'],
-        }
-    });
+ // Socket.IO setup with CORS
+ const io = new Server(appServer, {
+  cors: {
+   origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+     callback(null, true);
+    } else {
+     callback(new Error('Not allowed by CORS'));
+    }
+   },
+   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+   allowedHeaders: ['Content-Type'],
+  }
+ });
 
-    // Socket.IO connection
-    io.on('connection', (socket) => {
-        console.log('New WebSocket client connected:', socket.id);
+ // Socket.IO connection
+ io.on('connection', (socket) => {
+  console.log('New WebSocket client connected:', socket.id);
 
-        socket.on('orderData', (data) => {
-            io.emit('orderData', JSON.stringify(data));
-        });
+  socket.on('orderData', (data) => {
+   io.emit('orderData', JSON.stringify(data));
+  });
 
-        socket.on('disconnect', () => {
-            console.log('WebSocket client disconnected:', socket.id);
-        });
-    });
+  socket.on('disconnect', () => {
+   console.log('WebSocket client disconnected:', socket.id);
+  });
+ });
 
-    // Start server
-    appServer.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
+ // Start server
+ appServer.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+ });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
+ console.error(err.stack);
+ res.status(500).json({ error: 'Something went wrong!' });
 });
