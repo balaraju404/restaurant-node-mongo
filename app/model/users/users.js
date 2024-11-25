@@ -92,6 +92,7 @@ exports.details = async (reqParams) => {
   const login_name = reqParams['login_name'] || '';
   const user_name = reqParams['user_name'] || '';
   const role_id = reqParams['role_id'] || 0;
+  const user_id = reqParams['user_id'] || ''
 
   const query = {};
   if (login_name.length > 0) {
@@ -103,6 +104,9 @@ exports.details = async (reqParams) => {
   if (role_id > 0) {
    query.role_id = role_id;
   }
+  if (user_id.length > 0) {
+   query._id = new ObjectId(user_id)
+  }
 
   const db = getDb();
   const collection = db.collection(TBL_USERS);
@@ -113,6 +117,7 @@ exports.details = async (reqParams) => {
     e['user_profile'] = `data:image/png;base64,${base64Image}`;
    }
    e['user_id'] = e['_id']
+   delete e['password']
   });
   return { status: true, data: result };
  } catch (error) {
