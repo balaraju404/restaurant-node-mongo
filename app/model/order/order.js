@@ -17,7 +17,7 @@ exports.add = async (reqParams) => {
   const trans_id = result['insertedId'].toString();
 
   await addSubTransactions(trans_id, products_data);
-  return { status: 200, msg: 'Order transaction added successfully', insertedId: trans_id };
+  return { status: 200, msg: 'Order Placed', insertedId: trans_id };
  } catch (error) {
   throw error;
  }

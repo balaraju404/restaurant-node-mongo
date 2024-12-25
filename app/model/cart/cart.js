@@ -15,7 +15,7 @@ exports.add = async (reqParams) => {
   if (record.length > 0) {
    reqParams['cart_id'] = record[0]['_id'].toString();
    await this.update(reqParams);
-   return { status: true, msg: 'Record Updated Successfully' };
+   return { status: true, msg: 'Cart Updated Successfully' };
   }
 
   const insertRec = { user_id, res_id, cat_id, product_id, product_qty, status };
@@ -24,7 +24,7 @@ exports.add = async (reqParams) => {
   const collection = db.collection(TBL_USER_CART)
   const result = await collection.insertOne(insertRec);
   const productId = result['insertedId'];
-  return { status: true, msg: 'Record Created Successfully', insertedId: productId };
+  return { status: true, msg: 'Cart Added Successfully', insertedId: productId };
  } catch (error) {
   throw error;
  }
@@ -55,7 +55,7 @@ exports.update = async (reqParams) => {
   if (result.matchedCount === 0) {
    return { status: false, msg: 'No record found to update.' };
   }
-  return { status: true, msg: 'Record Updated Successfully' };
+  return { status: true, msg: 'Cart Updated Successfully' };
  } catch (error) {
   throw error;
  }
@@ -66,7 +66,7 @@ exports.del = async (reqParams) => {
   const db = getDb()
   const collection = db.collection(TBL_USER_CART)
   await collection.deleteOne(whr);
-  return { status: true, msg: 'Record Deleted Successfully' };
+  return { status: true, msg: 'Cart Deleted Successfully' };
  } catch (error) {
   throw error;
  }
