@@ -150,6 +150,7 @@ exports.details = async (reqParams) => {
     res_id: '$res_id',
     total_price: '$total_price',
     transaction_date: '$transaction_date',
+    display_order_date: { $dateToString: { date: "$transaction_date", format: "%d/%m/%Y %H:%M:%S" } },
     status: '$status',
     user_name: '$user_info.user_name',
     email: '$user_info.email',
