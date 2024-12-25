@@ -29,5 +29,12 @@ routes.post('/details', async (req, res, next) => {
   console.error(error);
  }
 })
+routes.post('/userCartCount', async (req, res, next) => {
+ try {
+  await cartController.userCartCount(req, res, next);
+ } catch (error) {
+  console.error(error);
+ }
+})
 
 module.exports = routes

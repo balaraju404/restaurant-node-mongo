@@ -43,3 +43,16 @@ exports.details = async (req, res, next) => {
   res.status(500).json({ status: false, msg: 'Internal server error', error: error })
  }
 }
+exports.userCartCount = async (req, res, next) => {
+ try {
+  const reqParams = req['body'] || {}
+  const result = await cartModel.userCartCount(reqParams);
+  if (result['status']) {
+   res.status(200).json({ status: result['status'], count: result['count'] || 0 })
+  } else {
+   res.status(200).json({ status: result['status'], msg: result['msg'] })
+  }
+ } catch (error) {
+  res.status(500).json({ status: false, msg: 'Internal server error', error: error })
+ }
+}

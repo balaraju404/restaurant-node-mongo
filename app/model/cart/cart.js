@@ -175,3 +175,21 @@ exports.details = async (reqParams) => {
   return { status: false, msg: 'Internal server error', error };
  }
 };
+exports.userCartCount = async (reqParams) => {
+ try {
+  const user_id = reqParams['user_id'] || '';
+  const status = reqParams['status'] || 0;
+
+  const matchConditions = {};
+  if (user_id.length > 0) matchConditions['user_id'] = user_id;
+  if (status > 0) matchConditions['status'] = status;
+
+  const db = getDb()
+  const collection = db.collection(TBL_USER_CART)
+  const count = await collection.countDocuments(matchConditions);
+  return { status: true, count: count };
+
+ } catch (error) {
+  return { status: false, msg: 'Internal server error', error };
+ }
+};
