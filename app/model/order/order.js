@@ -56,11 +56,13 @@ exports.update = async (reqParams) => {
 
   const updateRec = { modified_date: new Date(), status: status };
   if (status == 2) {
-   updateRec['order_accepted_date'] = new Date();
+   updateRec['accepted_date'] = new Date();
   } else if (status == 5) {
-   updateRec['order_shipped_date'] = new Date();
-  } else if (status == 6) {
-   updateRec['order_delivered_date'] = new Date();
+   updateRec['shipped_date'] = new Date();
+  } else if (status == 7) {
+   updateRec['delivered_date'] = new Date();
+  } else if (status == 8) {
+   updateRec['refunded_date'] = new Date();
   }
   const whr = { _id: new ObjectId(trans_id) };
 
@@ -77,8 +79,10 @@ exports.update = async (reqParams) => {
   } else if (status == 5) {
    msg = 'Order Packed Successfull'
   } else if (status == 6) {
-   msg = 'Order Delivered Successfull'
+   msg = 'Out of Delivered Successfull'
   } else if (status == 7) {
+   msg = 'Order Delivered Successfull'
+  } else if (status == 8) {
    msg = 'Order Refund Successfull'
   }
   return { status: true, msg: msg };
@@ -162,9 +166,10 @@ exports.details = async (reqParams) => {
     total_price: '$total_price',
     transaction_date: '$transaction_date',
     display_order_date: { $dateToString: { date: '$transaction_date', format: "%d/%m/%Y %H:%M:%S" } },
-    order_accepted_date: { $dateToString: { date: '$order_accepted_date', format: "%d/%m/%Y %H:%M:%S" } },
-    order_shipped_date: { $dateToString: { date: '$order_shipped_date', format: "%d/%m/%Y %H:%M:%S" } },
-    order_delivered_date: { $dateToString: { date: '$order_delivered_date', format: "%d/%m/%Y %H:%M:%S" } },
+    accepted_date: { $dateToString: { date: '$accepted_date', format: "%d/%m/%Y %H:%M:%S" } },
+    shipped_date: { $dateToString: { date: '$shipped_date', format: "%d/%m/%Y %H:%M:%S" } },
+    delivered_date: { $dateToString: { date: '$delivered_date', format: "%d/%m/%Y %H:%M:%S" } },
+    refunded_date: { $dateToString: { date: '$refunded_date', format: "%d/%m/%Y %H:%M:%S" } },
     modified_date: '$modified_date',
     status: '$status',
     user_name: '$user_info.user_name',
