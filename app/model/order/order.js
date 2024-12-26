@@ -150,7 +150,7 @@ exports.details = async (reqParams) => {
     res_id: '$res_id',
     total_price: '$total_price',
     transaction_date: '$transaction_date',
-    display_order_date: { $dateToString: { date: "$transaction_date", format: "%d/%m/%Y %H:%M:%S" } },
+    display_order_date: { $dateToString: { date: { $toDate: '$transaction_date' }, format: "%d/%m/%Y %H:%M:%S" } },
     status: '$status',
     user_name: '$user_info.user_name',
     email: '$user_info.email',
@@ -171,7 +171,7 @@ exports.details = async (reqParams) => {
   let pipeline2 = []
   if (transArray.length > 0) {
    pipeline.push({
-    $match: { $in: transArray }
+    $match: { trans_id: { $in: transArray } }
    })
   }
   pipeline2.push({
