@@ -184,6 +184,9 @@ exports.details = async (reqParams) => {
    }
   })
 
+  pipeline.push({
+   $sort: { transaction_date: -1 }
+  })
   const db = getDb()
   const collection = db.collection(TBL_ORDER_TRANSACTIONS)
   let result;
