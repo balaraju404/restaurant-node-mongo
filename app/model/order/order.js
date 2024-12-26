@@ -116,6 +116,7 @@ async function deleteSubTrans(trans_id) {
 
 exports.details = async (reqParams) => {
  try {
+  const trans_id = reqParams['trans_id'] || 0;
   const res_id = reqParams['res_id'] || '';
   const user_id = reqParams['user_id'] || '';
   const status = reqParams['status'] || 0;
@@ -128,6 +129,7 @@ exports.details = async (reqParams) => {
 
   let pipeline = []
   const matchConditions = {}
+  if (trans_id.length > 1) { matchConditions._id = new ObjectId(trans_id) }
   if (user_id.length > 0) matchConditions['user_id'] = user_id
   if (res_id.length > 0) matchConditions['res_id'] = res_id
   if (status > 0) matchConditions['status'] = status
