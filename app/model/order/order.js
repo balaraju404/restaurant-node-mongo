@@ -120,6 +120,12 @@ exports.details = async (reqParams) => {
   const user_id = reqParams['user_id'] || '';
   const status = reqParams['status'] || 0;
 
+  let limit_count = reqParams['page_limit'] || 0;
+  let offset_count = 0;
+  if (limit_count > 0) {
+   offset_count = reqParams['page_num'] * limit_count;
+  }
+
   let pipeline = []
   const matchConditions = {}
   if (user_id.length > 0) matchConditions['user_id'] = user_id
@@ -180,8 +186,13 @@ exports.details = async (reqParams) => {
 
   const db = getDb()
   const collection = db.collection(TBL_ORDER_TRANSACTIONS)
-  const result = await collection.aggregate(pipeline).toArray();
-
+  let result;
+  if (limit_count > 0) {
+   result = await collection.aggregate(pipeline).skip(offset_count).limit(limit_count).toArray()
+  } else {
+   result = await collection.aggregate(pipeline).toArray();
+  }
+  const count = await collection.countDocuments(matchConditions)
   let transArray = [];
   result.forEach((item) => {
    item['products_data'] = []
@@ -239,7 +250,7 @@ exports.details = async (reqParams) => {
     }
    });
   }
-  return { status: true, data: result };
+  return { status: true, data: result, count: count };
 
  } catch (error) {
   return { status: false, msg: 'Internal server error', error };

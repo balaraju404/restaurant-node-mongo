@@ -35,7 +35,7 @@ exports.details = async (req, res, next) => {
   const reqParams = req['body'] || {}
   const result = await orderModel.details(reqParams);
   if (result['data']) {
-   res.status(200).json({ status: result['status'], data: result['data'] })
+   res.status(200).json({ status: result['status'], data: result['data'], count: result['count'] || 0 })
   } else {
    res.status(200).json({ status: result['status'], msg: result['msg'] })
   }
