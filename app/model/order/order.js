@@ -52,13 +52,16 @@ async function deleteUserCartData(cart_id) {
 exports.update = async (reqParams) => {
  try {
   const trans_id = reqParams['trans_id'] || 0;
-  const user_id = reqParams['user_id'] || 0;
-  const res_id = reqParams['res_id'] || 0;
-  const total_price = reqParams['total_price'] || 0;
-  const transaction_date = reqParams['transaction_date'] || 0;
   const status = reqParams['status'] || 0;
 
-  const updateRec = { user_id: user_id, res_id: res_id, total_price: total_price, transaction_date: transaction_date, status: status };
+  const updateRec = { modified_date: new Date(), status: status };
+  if (status == 2) {
+   updateRec['order_accepted_date'] = new Date();
+  } else if (status == 5) {
+   updateRec['order_shipped_date'] = new Date();
+  } else if (status == 6) {
+   updateRec['order_delivered_date'] = new Date();
+  }
   const whr = { _id: new ObjectId(trans_id) };
 
   const db = getDb()
@@ -66,9 +69,17 @@ exports.update = async (reqParams) => {
   await collection.updateOne(whr, { $set: updateRec });
   let msg = 'Record Updated Successfully'
   if (status == 2) {
-   msg = 'Order Accepeted Successfull'
+   msg = 'Order Accepeted Successfully'
   } else if (status == 3) {
    msg = 'Order Rejection Successfull'
+  } else if (status == 4) {
+   msg = 'Order Cancelled Successfull'
+  } else if (status == 5) {
+   msg = 'Order Packed Successfull'
+  } else if (status == 6) {
+   msg = 'Order Delivered Successfull'
+  } else if (status == 7) {
+   msg = 'Order Refund Successfull'
   }
   return { status: true, msg: msg };
  } catch (error) {
@@ -150,7 +161,11 @@ exports.details = async (reqParams) => {
     res_id: '$res_id',
     total_price: '$total_price',
     transaction_date: '$transaction_date',
-    display_order_date: { $dateToString: { date: { $toDate: '$transaction_date' }, format: "%d/%m/%Y %H:%M:%S" } },
+    display_order_date: { $dateToString: { date: '$transaction_date', format: "%d/%m/%Y %H:%M:%S" } },
+    order_accepted_date: { $dateToString: { date: '$order_accepted_date', format: "%d/%m/%Y %H:%M:%S" } },
+    order_shipped_date: { $dateToString: { date: '$order_shipped_date', format: "%d/%m/%Y %H:%M:%S" } },
+    order_delivered_date: { $dateToString: { date: '$order_delivered_date', format: "%d/%m/%Y %H:%M:%S" } },
+    modified_date: '$modified_date',
     status: '$status',
     user_name: '$user_info.user_name',
     email: '$user_info.email',
