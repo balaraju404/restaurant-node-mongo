@@ -49,6 +49,8 @@ mongoConnect(() => {
  const io = new Server(appServer, {
   cors: {
    origin: (origin, callback) => {
+    console.log(origin);
+    
     if (allowedOrigins.includes(origin) || !origin) {
      callback(null, true);
     } else {
