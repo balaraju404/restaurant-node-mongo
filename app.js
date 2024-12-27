@@ -19,7 +19,6 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS
 // Set up CORS for the Express server
 app.use((req, res, next) => {
  const origin = req.headers.origin || 'default';
- console.log(origin)
  if (!req.headers.origin || allowedOrigins.includes(origin)) {
   res.setHeader('Access-Control-Allow-Origin', origin || '*');
  }
@@ -48,9 +47,7 @@ mongoConnect(() => {
  // Socket.IO setup with CORS
  const io = new Server(appServer, {
   cors: {
-   origin: (origin, callback) => {
-    console.log(origin);
-    
+   origin: (origin, callback) => {    
     if (allowedOrigins.includes(origin) || !origin) {
      callback(null, true);
     } else {
@@ -64,14 +61,14 @@ mongoConnect(() => {
 
  // Socket.IO connection
  io.on('connection', (socket) => {
-  console.log('New WebSocket client connected:', socket.id);
+//   console.log('New WebSocket client connected:', socket.id);
 
   socket.on('orderData', (data) => {
    io.emit('orderData', JSON.stringify(data));
   });
 
   socket.on('disconnect', () => {
-   console.log('WebSocket client disconnected:', socket.id);
+//    console.log('WebSocket client disconnected:', socket.id);
   });
  });
 
