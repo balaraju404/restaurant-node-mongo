@@ -6,7 +6,7 @@ exports.create = async (reqParams) => {
   const login_name = reqParams['login_name'];
   const user_name = reqParams['user_name'];
   const password = reqParams['password'];
-  const role_id = reqParams['role_id'];
+  const role_id = reqParams['role_id'] || 0;
   const userExists = await checkUser(login_name);
   if (userExists) {
    return { status: false, msg: 'User already exists' };
@@ -23,11 +23,28 @@ exports.create = async (reqParams) => {
 exports.update = async (reqParams) => {
  try {
   const user_id = reqParams['user_id'] || ''
-  const fname = reqParams['fname'] || ''
-  const lname = reqParams['lname'] || ''
-  const email = reqParams['email'] || ''
-  const mobile = reqParams['mobile'] || ''
-  const updateRec = { 'fname': fname, 'lname': lname, 'email': email, 'mobile': mobile, 'modified_date': new Date(), 'status': 1 }
+  const updateRec = { 'modified_date': new Date() }
+  if ("fname" in reqParams) {
+   updateRec['fname'] = reqParams['fname'];
+  }
+  if ("lname" in reqParams) {
+   updateRec['lname'] = reqParams['lname'];
+  }
+  if ("email" in reqParams) {
+   updateRec['email'] = reqParams['email'];
+  }
+  if ("mobile" in reqParams) {
+   updateRec['mobile'] = reqParams['mobile'];
+  }
+  if ("role_id" in reqParams) {
+   updateRec['role_id'] = reqParams['role_id']
+  }
+  if ("status" in reqParams) {
+   updateRec['status'] = reqParams['status']
+  }
+  if ("password" in reqParams) {
+   updateRec['password'] = reqParams['password']
+  }
   const db = getDb();
   const collection = db.collection(TBL_USERS)
   const result = await collection.updateOne({ _id: new ObjectId(user_id) }, { $set: updateRec });
