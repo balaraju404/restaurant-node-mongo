@@ -1,4 +1,5 @@
 const { getDb } = require('../../db-conn/db-conn');
+const { add } = require('../assign_restaurant_users/assign_restaurant_users');
 const { ObjectId } = require('mongoose').Types;
 
 exports.create = async (reqParams, file) => {
@@ -14,6 +15,13 @@ exports.create = async (reqParams, file) => {
   const db = getDb();
   const collection = db.collection(TBL_RESTAURANTS);
   const result = await collection.insertOne(insertRec)
+  const res_id = result['insertedId'].toString()
+  const user_id = reqParams['user_id'] || ''
+  const role_id = reqParams['role_id'] || 0
+  if (role_id == 2) {
+   const params = { res_id, user_id, role_id }
+   const result = await add(params);
+  }
   return { status: true, msg: 'Restaurant Created Successfull', insertedId: result['insertedId'] }
  } catch (error) {
   throw error
@@ -60,13 +68,15 @@ exports.details = async (reqParams) => {
   if (result.length > 0) {
    result.forEach((obj) => {
     const imageData = obj['res_logo'];
-    const base64Image = imageData.toString('base64');
+    const base64Image = imageData?.toString('base64');
     obj['res_logo'] = `data:image/png;base64,${base64Image}`;
     obj['res_id'] = obj['_id']
    });
   }
   return { status: true, data: result }
  } catch (error) {
+  console.log(error);
+  
   throw error
  }
 }

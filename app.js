@@ -47,7 +47,7 @@ mongoConnect(() => {
  // Socket.IO setup with CORS
  const io = new Server(appServer, {
   cors: {
-   origin: (origin, callback) => {    
+   origin: (origin, callback) => {
     if (allowedOrigins.includes(origin) || !origin) {
      callback(null, true);
     } else {
@@ -59,18 +59,70 @@ mongoConnect(() => {
   }
  });
 
- // Socket.IO connection
- io.on('connection', (socket) => {
-//   console.log('New WebSocket client connected:', socket.id);
+ // A simple mapping to store user_id -> array of socketIds
+ const userSocketMap = {};
+ const resSocketMap = {};
+ const adminSocketMap = {};
 
+ io.on('connection', (socket) => {
+  const { role_id = 0, res_id = '', user_id = '' } = socket.handshake.auth || {};
+  if (role_id == 2 && res_id) {
+   if (resSocketMap[res_id]) {
+    resSocketMap[res_id].push(socket.id);
+   } else {
+    resSocketMap[res_id] = [socket.id];
+   }
+  } else if (role_id == 3 && user_id) {
+   console.log(`User ${user_id} connected with socket id: ${socket.id}`);
+
+   // Ensure we store multiple socket ids for a user (in case of multiple tabs)
+   if (userSocketMap[user_id]) {
+    userSocketMap[user_id].push(socket.id);
+   } else {
+    userSocketMap[user_id] = [socket.id];
+   }
+  } else if (role_id == 1 && user_id) {
+   console.log(`Admin ${user_id} connected with socket id: ${socket.id}`);
+   if (adminSocketMap[user_id]) {
+    adminSocketMap[user_id].push(socket.id);
+   } else {
+    adminSocketMap[user_id] = [socket.id];
+   }
+  } else {
+   console.log('Unknown role', role_id);
+  }
+
+  // Handle orderData event (broadcast to all clients)
   socket.on('orderData', (data) => {
-   io.emit('orderData', JSON.stringify(data));
+   io.emit('orderData', JSON.stringify(data)); // Broadcast to all connected clients
   });
 
+  // Handle disconnect event
   socket.on('disconnect', () => {
-//    console.log('WebSocket client disconnected:', socket.id);
+   if (user_id && userSocketMap[user_id]) {
+    // Remove the socket id from the user's list
+    userSocketMap[user_id] = userSocketMap[user_id].filter((socketId) => socketId !== socket.id);
+    if (userSocketMap[user_id].length === 0) {
+     delete userSocketMap[user_id];
+    }
+    console.log(`User ${user_id} disconnected`);
+   }
   });
  });
+
+ // Function to send data to a particular user by their user_id
+ function sendToUser(user_id, data) {
+  const socketIds = userSocketMap[user_id];
+  if (socketIds && socketIds.length > 0) {
+   // Emit data to each socket ID associated with the user
+   socketIds.forEach((socketId) => {
+    io.to(socketId).emit('orderData', JSON.stringify(data));
+   });
+   console.log(`Sent data to user ${user_id}`);
+  } else {
+   console.log(`User ${user_id} is not connected`);
+  }
+ }
 
  // Start server
  appServer.listen(PORT, () => {
