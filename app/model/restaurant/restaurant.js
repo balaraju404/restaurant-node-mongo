@@ -68,15 +68,19 @@ exports.details = async (reqParams) => {
   if (result.length > 0) {
    result.forEach((obj) => {
     const imageData = obj['res_logo'];
-    const base64Image = imageData?.toString('base64');
-    obj['res_logo'] = `data:image/png;base64,${base64Image}`;
+    if (imageData) {
+     const base64Image = imageData.toString('base64');
+     obj['res_logo'] = `data:image/png;base64,${base64Image}`;
+    } else {
+     obj['res_logo'] = null;
+    }
     obj['res_id'] = obj['_id']
    });
   }
   return { status: true, data: result }
  } catch (error) {
   console.log(error);
-  
+
   throw error
  }
 }
