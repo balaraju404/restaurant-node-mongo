@@ -1,13 +1,37 @@
 const routes = require("express").Router();
 const restaurantController = require('../../controller/restaurant/restaurant')
+const { check, validationResult } = require('express-validator')
 const multer = require('multer');
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-routes.post('/create', upload.single('res_logo'), async (req, res, next) => {
+routes.post('/create', [
+ check('restaurant_name').not().isEmpty().withMessage('Restaurant Name is required'),
+ check('restaurant_name').isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
+ check('restaurant_name').isLength({ max: 20 }).withMessage('Name must be at most 20 characters'),
+], upload.single('res_logo'), async (req, res, next) => {
+ const errors = validationResult(req);
+ if (!errors.isEmpty()) {
+  return res.status(400).json({ errors: errors.array() });
+ }
  try {
   await restaurantController.create(req, res, next);
+ } catch (error) {
+  console.error(error);
+ }
+})
+routes.put('/update', [
+ // check('res_id').isMongoId().withMessage('Invalid Restaurant ID'),
+ // check('restaurant_name').optional().isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
+ // check('restaurant_name').optional().isLength({ max: 20 }).withMessage('Name must be at most 20 characters'),
+], upload.single('res_logo'), async (req, res, next) => {
+ // const errors = validationResult(req);
+ // if (!errors.isEmpty()) {
+ //  return res.status(400).json({ errors: errors.array() });
+ // }
+ try {
+  await restaurantController.update(req, res, next);
  } catch (error) {
   console.error(error);
  }

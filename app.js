@@ -67,6 +67,8 @@ mongoConnect(() => {
  io.on('connection', (socket) => {
   const { role_id = 0, res_id = '', user_id = '' } = socket.handshake.auth || {};
   if (role_id == 2 && res_id) {
+   console.log('res_id: ' + res_id + ' with socket id: ' + socket.id);
+
    if (resSocketMap[res_id]) {
     resSocketMap[res_id].push(socket.id);
    } else {

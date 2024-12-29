@@ -1,5 +1,6 @@
 const routes = require("express").Router();
 const cartController = require('../../controller/cart/cart')
+const { check, validationResult } = require('express-validator')
 
 routes.post('/add', async (req, res, next) => {
  try {
@@ -29,7 +30,9 @@ routes.post('/details', async (req, res, next) => {
   console.error(error);
  }
 })
-routes.post('/userCartCount', async (req, res, next) => {
+routes.post('/userCartCount', [
+ check('user_id').isMongoId().withMessage('Invalid User ID'),
+], async (req, res, next) => {
  try {
   await cartController.userCartCount(req, res, next);
  } catch (error) {

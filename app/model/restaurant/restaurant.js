@@ -27,25 +27,53 @@ exports.create = async (reqParams, file) => {
   throw error
  }
 }
+exports.update = async (reqParams, file) => {
+ try {
+  const res_logo = file['buffer'] || '';
+  let updateRec = { 'modified_date': new Date() }
+  if (res_logo) {
+   updateRec['res_logo'] = res_logo
+  }
+  if ("restaurant_name" in reqParams) {
+   updateRec['restaurant_name'] = reqParams['restaurant_name']
+  }
+  if ("description" in reqParams) {
+   updateRec['description'] = reqParams['description']
+  }
+  if ("status" in reqParams) {
+   updateRec['status'] = reqParams['status']
+  }
+  const whr = { '_id': new ObjectId(reqParams['res_id']) }
+  console.log(updateRec);
+
+  const db = getDb();
+  const collection = db.collection(TBL_RESTAURANTS);
+  const result = await collection.updateOne(whr, { $set: updateRec })
+  return { status: true, msg: 'Restaurant Updated Successfull' }
+ } catch (error) {
+  console.log(error);
+
+  throw error
+ }
+}
 exports.get = async (reqParams) => {
  try {
   const res_id = reqParams['res_id'];
   const db = getDb();
   const collection = db.collection(TBL_RESTAURANTS);
 
-  // Convert res_id to ObjectId
   const result = await collection.find({ '_id': new ObjectId(res_id) }).sort({ restaurant_name: 1 }).toArray();
+  // console.log(result);
 
   if (result.length > 0) {
    result.forEach((obj) => {
     const imageData = obj['res_logo'];
 
-    // Check if imageData is a Buffer before converting to base64
     if (imageData) {
      const base64Image = imageData.toString('base64');
      obj['res_logo'] = `data:image/png;base64,${base64Image}`;
     } else {
-     obj['res_logo'] = null; // or set to a placeholder image if desired
+     obj['res_logo'] = null;
     }
 
     obj['res_id'] = obj['_id'];
@@ -56,8 +84,7 @@ exports.get = async (reqParams) => {
 
   return { status: true, data: result[0] };
  } catch (error) {
-  console.error('Error fetching restaurant data:', error); // Log the error for debugging
-  return { status: false, msg: "Internal server error", error: error.message }; // Return structured error response
+  return { status: false, msg: "Internal server error", error: error.message };
  }
 };
 exports.details = async (reqParams) => {

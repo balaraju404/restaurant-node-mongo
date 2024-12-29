@@ -8,6 +8,7 @@ const res_categories = require('./res_categories/res_categories')
 const products = require('./products/products.js')
 const cart = require('./cart/cart.js')
 const order = require('./order/order')
+const dashboard = require('./dashboard')
 
 routes.use('/login', login);
 routes.use('/user', user)
@@ -18,5 +19,6 @@ routes.use('/res_categories', res_categories)
 routes.use('/products', products)
 routes.use('/cart', cart)
 routes.use('/order', order)
+routes.use('/dashboard', dashboard)
 
 module.exports = routes;
