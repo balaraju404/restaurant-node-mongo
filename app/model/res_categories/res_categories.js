@@ -49,6 +49,10 @@ exports.details = async (reqParams) => {
   if (!ObjectId.isValid(res_id)) {
    return { status: false, msg: 'Invalid restaurant id' };
   }
+  let matchCond = {}
+  if ("search_text" in reqParams) {
+   matchCond = { "cat_info.cat_name": { $regex: reqParams['search_text'], $options: 'i' } }
+  }
 
   const db = getDb();
   const collection = db.collection(TBL_RESTAURANT_CATEGORIES);
@@ -73,6 +77,9 @@ exports.details = async (reqParams) => {
    },
    {
     $unwind: { path: '$cat_info', preserveNullAndEmptyArrays: true }
+   },
+   {
+    $match: matchCond
    },
    {
     $project: {
