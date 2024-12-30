@@ -3,8 +3,8 @@ exports.add = async (req, res, next) => {
  try {
   const reqParams = req['body'] || {}
   const result = await resCategoriesModel.add(reqParams);
-  if (result['insertedId']) {
-   res.status(200).json({ status: result['status'], msg: result['msg'], insertedId: result['insertedId'] })
+  if (result['insertedIds']) {
+   res.status(200).json({ status: result['status'], msg: result['msg'], insertedIds: result['insertedIds'] })
   } else {
    res.status(200).json({ status: result['status'], msg: result['msg'] })
   }
