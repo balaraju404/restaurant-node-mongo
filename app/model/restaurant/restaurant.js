@@ -11,7 +11,7 @@ exports.create = async (reqParams, file) => {
   if (restaurantExists) {
    return { status: false, msg: 'Restaurant name already exists' };
   }
-  const insertRec = { 'restaurant_name': restaurant_name, 'res_logo': res_logo, 'description': description, 'created_date': new Date(), 'modified_date': '', 'status': 1 }
+  const insertRec = { 'restaurant_name': restaurant_name, 'res_logo': res_logo, 'description': description, 'created_date': new Date(), 'modified_date': '', 'is_open': 0, 'status': 2 }
   const db = getDb();
   const collection = db.collection(TBL_RESTAURANTS);
   const result = await collection.insertOne(insertRec)
@@ -43,16 +43,16 @@ exports.update = async (reqParams, file) => {
   if ("status" in reqParams) {
    updateRec['status'] = reqParams['status']
   }
+  if ("is_open" in reqParams) {
+   updateRec['is_open'] = reqParams['is_open']
+  }
   const whr = { '_id': new ObjectId(reqParams['res_id']) }
-  console.log(updateRec);
 
   const db = getDb();
   const collection = db.collection(TBL_RESTAURANTS);
   const result = await collection.updateOne(whr, { $set: updateRec })
   return { status: true, msg: 'Restaurant Updated Successfull' }
  } catch (error) {
-  console.log(error);
-
   throw error
  }
 }
@@ -63,8 +63,6 @@ exports.get = async (reqParams) => {
   const collection = db.collection(TBL_RESTAURANTS);
 
   const result = await collection.find({ '_id': new ObjectId(res_id) }).sort({ restaurant_name: 1 }).toArray();
-  // console.log(result);
-
   if (result.length > 0) {
    result.forEach((obj) => {
     const imageData = obj['res_logo'];
@@ -106,8 +104,6 @@ exports.details = async (reqParams) => {
   }
   return { status: true, data: result }
  } catch (error) {
-  console.log(error);
-
   throw error
  }
 }

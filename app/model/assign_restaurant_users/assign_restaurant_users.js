@@ -66,11 +66,12 @@ exports.details = async (reqParams) => {
   // Project the required fields
   pipeline.push({
    $project: {
-    // id: '$_id',
     user_id: '$user_id',
     res_id: '$res_id',
     restaurant_name: { $ifNull: ['$restaurant_info.restaurant_name', 'Not Found'] },
     res_logo: { $ifNull: ['$restaurant_info.res_logo', null] },
+    is_open: { $ifNull: ['$restaurant_info.is_open', 0] },
+    status: { $ifNull: ['$restaurant_info.status', 0] },
     role_id: '$role_id',
     role_name: { $ifNull: ['$role_info.login_role_name', 'Not Found'] }
    }

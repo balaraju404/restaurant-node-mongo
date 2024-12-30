@@ -22,14 +22,7 @@ routes.post('/create', [
  }
 })
 routes.put('/update', [
- // check('res_id').isMongoId().withMessage('Invalid Restaurant ID'),
- // check('restaurant_name').optional().isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
- // check('restaurant_name').optional().isLength({ max: 20 }).withMessage('Name must be at most 20 characters'),
 ], upload.single('res_logo'), async (req, res, next) => {
- // const errors = validationResult(req);
- // if (!errors.isEmpty()) {
- //  return res.status(400).json({ errors: errors.array() });
- // }
  try {
   await restaurantController.update(req, res, next);
  } catch (error) {
