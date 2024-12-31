@@ -11,3 +11,5 @@ global.TBL_ORDER_TRANSACTIONS = "order_transactions"
 global.TBL_SUB_TRANSACTIONS = "sub_transactions"
 global.TBL_NOTIFICATIONS = "notifications"
 
+global.TIMEZONE = "Asia/Kolkata"
+

@@ -4,19 +4,20 @@ const { ObjectId } = require('mongoose').Types;
 exports.send = async (reqParams) => {
  try {
   const sender_id = reqParams['sender_id'] || 0;
-  const reveiver_id = reqParams['reveiver_id'] || 0;
+  const receiver_id = reqParams['receiver_id'] || 0;
   const title = reqParams['title'] || '';
   const message = reqParams['message'] || [];
   const link = reqParams['link'] || '';
+  const ref_id = reqParams['ref_id'] || '';
   const status = 1;
 
-  const insertRec = { 'sender_id': sender_id, 'reveiver_id': reveiver_id, 'title': title, 'message': message, 'link': link, 'sent_date': new Date(), 'status': status };
+  const insertRec = { 'sender_id': sender_id, 'receiver_id': receiver_id, 'title': title, 'message': message, 'link': link, 'ref_id': ref_id, 'sent_date': new Date(), 'status': status };
 
   const db = getDb()
   const collection = db.collection(TBL_NOTIFICATIONS)
   const result = await collection.insertOne(insertRec);
   const notification_id = result['insertedId'].toString();
-  return { status: 200, msg: 'Notification sent successfully', insertedId: notification_id };
+  return { status: true, msg: 'Notification sent successfully', insertedId: notification_id };
  } catch (error) {
   throw error;
  }
@@ -99,7 +100,7 @@ exports.details = async (reqParams) => {
     title: '$title',
     message: '$message',
     sent_date: '$sent_date',
-    display_sent_date: { $dateToString: { date: { $toDate: "$sent_date" }, format: "%d %b %Y %H:%M" } },
+    display_sent_date: { $dateToString: { date: { $toDate: "$sent_date" }, format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
     modified_date: '$modified_date',
     status: '$status'
    }

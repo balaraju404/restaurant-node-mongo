@@ -1,5 +1,6 @@
 const { getDb } = require("../../db-conn/db-conn");
 const { ObjectId } = require('mongoose').Types;
+const { send } = require("../notifications/index");
 
 exports.add = async (reqParams) => {
  try {
@@ -17,7 +18,9 @@ exports.add = async (reqParams) => {
   const trans_id = result['insertedId'].toString();
 
   await addSubTransactions(trans_id, products_data);
-  return { status: 200, msg: 'Order Placed', insertedId: trans_id };
+  const params = { 'sender_id': user_id, 'receiver_id': res_id, 'title': 'Receiverd Order', 'message': `Order received successfully. Order ID: ${trans_id}`, 'ref_id': trans_id };
+  await send(params)
+  return { status: true, msg: 'Order Placed', insertedId: trans_id };
  } catch (error) {
   throw error;
  }
@@ -173,11 +176,11 @@ exports.details = async (reqParams) => {
     res_id: '$res_id',
     total_price: '$total_price',
     transaction_date: '$transaction_date',
-    display_order_date: { $dateToString: { date: { $toDate: "$transaction_date" }, format: "%d %b %Y %H:%M" } },
-    accepted_date: { $dateToString: { date: '$accepted_date', format: "%d %b %Y %H:%M" } },
-    shipped_date: { $dateToString: { date: '$shipped_date', format: "%d %b %Y %H:%M" } },
-    delivered_date: { $dateToString: { date: '$delivered_date', format: "%d %b %Y %H:%M" } },
-    refunded_date: { $dateToString: { date: '$refunded_date', format: "%d %b %Y %H:%M" } },
+    display_order_date: { $dateToString: { date: { $toDate: "$transaction_date" }, format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
+    accepted_date: { $dateToString: { date: '$accepted_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
+    shipped_date: { $dateToString: { date: '$shipped_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
+    delivered_date: { $dateToString: { date: '$delivered_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
+    refunded_date: { $dateToString: { date: '$refunded_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
     modified_date: '$modified_date',
     status: '$status',
     user_name: '$user_info.user_name',
