@@ -7,9 +7,9 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 routes.post('/create', [
- check('restaurant_name').not().isEmpty().withMessage('Restaurant Name is required'),
- check('restaurant_name').isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
- check('restaurant_name').isLength({ max: 20 }).withMessage('Name must be at most 20 characters'),
+//  check('restaurant_name').not().isEmpty().withMessage('Restaurant Name is required'),
+//  check('restaurant_name').isLength({ min: 3 }).withMessage('Name must be at least 3 characters'),
+//  check('restaurant_name').isLength({ max: 20 }).withMessage('Name must be at most 20 characters'),
 ], upload.single('res_logo'), async (req, res, next) => {
  const errors = validationResult(req);
  if (!errors.isEmpty()) {
