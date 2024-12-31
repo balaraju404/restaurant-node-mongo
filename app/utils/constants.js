@@ -9,3 +9,5 @@ global.TBL_PRODUCT_IMAGES = "product_images"
 global.TBL_USER_CART = "user_cart"
 global.TBL_ORDER_TRANSACTIONS = "order_transactions"
 global.TBL_SUB_TRANSACTIONS = "sub_transactions"
+global.TBL_NOTIFICATIONS = "notifications"
+

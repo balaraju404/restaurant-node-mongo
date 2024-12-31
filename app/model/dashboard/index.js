@@ -113,11 +113,10 @@ exports.userCartCount = async (reqParams) => {
 exports.resActiveCount = async (reqParams) => {
  try {
   const res_id = reqParams['res_id'] || '';
-  const status = reqParams['status'] || 1;
 
   const matchConditions = {};
   if (res_id.length > 0) matchConditions['res_id'] = res_id;
-  if (status > 0) matchConditions['status'] = status;
+  matchConditions['status'] = { $in: [1, 2, 5, 6] };
 
   const db = getDb()
   const collection = db.collection(TBL_ORDER_TRANSACTIONS)

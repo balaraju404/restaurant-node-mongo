@@ -9,6 +9,7 @@ const products = require('./products/products.js')
 const cart = require('./cart/cart.js')
 const order = require('./order/order')
 const dashboard = require('./dashboard')
+const notifications = require('./notifications')
 
 routes.use('/login', login);
 routes.use('/user', user)
@@ -20,5 +21,6 @@ routes.use('/products', products)
 routes.use('/cart', cart)
 routes.use('/order', order)
 routes.use('/dashboard', dashboard)
+routes.use('/notifications', notifications)
 
 module.exports = routes;
