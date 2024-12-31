@@ -53,5 +53,14 @@ routes.post('/details', async (req, res, next) => {
   console.error(error);
  }
 })
-
+routes.post('/count', [
+ check('receiver_id').not().isEmpty().withMessage('Receiver Id is required'),
+ check('receiver_id').isMongoId().withMessage('Invalid Receiver Id')
+], async (req, res, next) => {
+ try {
+  await notifications.count(req, res, next);
+ } catch (error) {
+  console.error(error);
+ }
+})
 module.exports = routes

@@ -124,3 +124,30 @@ exports.details = async (reqParams) => {
   return { status: false, msg: 'Internal server error', error };
  }
 };
+exports.count = async (reqParams) => {
+ try {
+  const matchConditions = {}
+  if ('sender_id' in reqParams) {
+   matchConditions.sender_id = reqParams['sender_id']
+  }
+  if ('receiver_id' in reqParams) {
+   matchConditions.receiver_id = reqParams['receiver_id']
+  }
+  if ("status" in reqParams) {
+   let status = reqParams['status'] || []
+   if (!Array.isArray(status)) {
+    status = [status]
+   }
+   matchConditions.status = { $in: status }
+  }
+  const db = getDb()
+  const collection = db.collection(TBL_NOTIFICATIONS)
+  const count = await collection.countDocuments(matchConditions)
+  return { status: true, count: count || 0 };
+ } catch (error) {
+  console.log(error);
+
+  return { status: false, msg: 'Internal server error', error };
+
+ }
+}

@@ -54,12 +54,18 @@ async function deleteUserCartData(cart_id) {
 
 exports.update = async (reqParams) => {
  try {
-  const trans_id = reqParams['trans_id'] || 0;
+  const trans_id = reqParams['trans_id'] || '';
+  const res_id = reqParams['res_id'] || '';
+  const user_id = reqParams['user_id'] || '';
   const status = reqParams['status'] || 0;
 
   const updateRec = { modified_date: new Date(), status: status };
   if (status == 2) {
    updateRec['accepted_date'] = new Date();
+  } else if (status == 3) {
+   updateRec['rejected_date'] = new Date();
+  } else if (status == 4) {
+   updateRec['cancelled_date'] = new Date();
   } else if (status == 5) {
    updateRec['shipped_date'] = new Date();
   } else if (status == 7) {
@@ -72,22 +78,45 @@ exports.update = async (reqParams) => {
   const db = getDb()
   const collection = db.collection(TBL_ORDER_TRANSACTIONS)
   await collection.updateOne(whr, { $set: updateRec });
-  let msg = 'Record Updated Successfully'
+
+  let msg = 'Record Updated Successfully';
+  let title = '';
+  let notificationMessage = '';
+
   if (status == 2) {
-   msg = 'Order Accepeted Successfully'
+   msg = 'Order Accepted Successfully';
+   title = 'Order Accepted';
+   notificationMessage = 'Your order has been accepted and is being processed.';
   } else if (status == 3) {
-   msg = 'Order Rejection Successfull'
+   msg = 'Order Rejected Successfully';
+   title = 'Order Rejected';
+   notificationMessage = 'Unfortunately, your order has been rejected.';
   } else if (status == 4) {
-   msg = 'Order Cancelled Successfull'
+   msg = 'Order Cancelled Successfully';
+   title = 'Order Cancelled';
+   notificationMessage = 'Your order has been cancelled.';
   } else if (status == 5) {
-   msg = 'Order Packed Successfull'
+   msg = 'Order Packed Successfully';
+   title = 'Order Packed';
+   notificationMessage = 'Your order is packed and ready for shipping.';
   } else if (status == 6) {
-   msg = 'Out of Delivered Successfull'
+   msg = 'Out of Delivered Successfully';
+   title = 'Out of Delivered';
+   notificationMessage = 'Your order has left for delivery.';
   } else if (status == 7) {
-   msg = 'Order Delivered Successfull'
+   msg = 'Order Delivered Successfully';
+   title = 'Order Delivered';
+   notificationMessage = 'Your order has been delivered successfully.';
   } else if (status == 8) {
-   msg = 'Order Refund Successfull'
+   msg = 'Order Refund Successfully';
+   title = 'Order Refund';
+   notificationMessage = 'Your order has been refunded successfully.';
   }
+  let params = { 'sender_id': res_id, 'receiver_id': user_id, 'title': title, 'message': `${notificationMessage}. Order ID: ${trans_id}`, 'ref_id': trans_id };
+  if (status === 4) {
+   params = { 'sender_id': user_id, 'receiver_id': res_id, 'title': title, 'message': `${notificationMessage}. Order ID: ${trans_id}`, 'ref_id': trans_id }
+  }
+  await send(params)
   return { status: true, msg: msg };
  } catch (error) {
   throw error;
@@ -122,7 +151,7 @@ exports.details = async (reqParams) => {
   const trans_id = reqParams['trans_id'] || 0;
   const res_id = reqParams['res_id'] || '';
   const user_id = reqParams['user_id'] || '';
-  const status = reqParams['status'] || 0;
+  const status = reqParams['status'] || [];
 
   let limit_count = reqParams['page_limit'] || 0;
   let offset_count = 0;
@@ -135,7 +164,10 @@ exports.details = async (reqParams) => {
   if (trans_id.length > 1) { matchConditions._id = new ObjectId(trans_id) }
   if (user_id.length > 0) matchConditions['user_id'] = user_id
   if (res_id.length > 0) matchConditions['res_id'] = res_id
-  if (status > 0) matchConditions['status'] = status
+  if (!Array.isArray(status)) {
+   status = [status]
+  }
+  if (status.length > 0) matchConditions['status'] = { $in: status }
 
   if (Object.keys(matchConditions).length > 0) {
    pipeline.push({
@@ -178,6 +210,8 @@ exports.details = async (reqParams) => {
     transaction_date: '$transaction_date',
     display_order_date: { $dateToString: { date: { $toDate: "$transaction_date" }, format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
     accepted_date: { $dateToString: { date: '$accepted_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
+    rejected_date: { $dateToString: { date: '$rejected_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
+    cancelled_date: { $dateToString: { date: '$cancelled_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
     shipped_date: { $dateToString: { date: '$shipped_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
     delivered_date: { $dateToString: { date: '$delivered_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
     refunded_date: { $dateToString: { date: '$refunded_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },

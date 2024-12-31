@@ -1,5 +1,6 @@
 const routes = require("express").Router();
 const orderController = require('../../controller/order/order')
+const { check, validationResult } = require('express-validator')
 
 routes.post('/add', async (req, res, next) => {
  try {
@@ -8,7 +9,13 @@ routes.post('/add', async (req, res, next) => {
   console.error(error);
  }
 })
-routes.put('/update', async (req, res, next) => {
+routes.put('/update', [
+ check('trans_id').isMongoId().withMessage('Invalid Order ID'),
+], async (req, res, next) => {
+ const errors = validationResult(req);
+ if (!errors.isEmpty()) {
+  return res.status(422).json({ errors: errors.array() });
+ }
  try {
   await orderController.update(req, res, next);
  } catch (error) {
