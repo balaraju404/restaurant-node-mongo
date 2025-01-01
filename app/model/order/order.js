@@ -202,6 +202,11 @@ exports.details = async (reqParams) => {
   pipeline.push({ $unwind: { path: '$restaurant_info', preserveNullAndEmptyArrays: true } })
 
   pipeline.push({
+    $addFields:{
+     name:{$concat:['$user_info.fname',' ','$user_info.lname']}
+    }
+  },
+   {
    $project: {
     trans_id: '$_id',
     user_id: '$user_id',
@@ -217,7 +222,13 @@ exports.details = async (reqParams) => {
     refunded_date: { $dateToString: { date: '$refunded_date', format: "%d %b %Y %H:%M", timezone: TIMEZONE } },
     modified_date: '$modified_date',
     status: '$status',
-    user_name: '$user_info.user_name',
+     user_name: {
+      $cond: [
+       { $eq: [{ $strLenCP: "$name" }, 1] }, // Check if the length of 'name' is 1
+          "$user_info.user_name",              // If true, use 'user_info.user_name'
+          "$name"                              // Otherwise, use 'name'
+      ]},
+   // user_name: '$user_info.user_name',
     email: '$user_info.email',
     restaurant_name: '$restaurant_info.restaurant_name',
    }
