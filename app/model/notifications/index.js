@@ -1,4 +1,5 @@
 const { getDb } = require("../../db-conn/db-conn");
+const { sendPushNotification } = require("../../utils/notification-conn");
 const { ObjectId } = require('mongoose').Types;
 
 exports.send = async (reqParams) => {
@@ -10,12 +11,13 @@ exports.send = async (reqParams) => {
   const link = reqParams['link'] || '';
   const ref_id = reqParams['ref_id'] || '';
   const status = 1;
-
+  const deviceToken = reqParams['deviceToken']
   const insertRec = { 'sender_id': sender_id, 'receiver_id': receiver_id, 'title': title, 'message': message, 'link': link, 'ref_id': ref_id, 'sent_date': new Date(), 'status': status };
 
   const db = getDb()
   const collection = db.collection(TBL_NOTIFICATIONS)
   const result = await collection.insertOne(insertRec);
+  await sendPushNotification(deviceToken);
   const notification_id = result['insertedId'].toString();
   return { status: true, msg: 'Notification sent successfully', insertedId: notification_id };
  } catch (error) {
