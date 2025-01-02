@@ -66,7 +66,7 @@ exports.getDeviceTokens = async (reqParams) => {
    matchConditions._id = new ObjectId(reqParams['device_token_id'])
   }
   if ('id' in reqParams) {
-   matchConditions.sender_id = reqParams['id']
+   matchConditions.id = reqParams['id']
   }
   if ("status" in reqParams) {
    matchConditions.status = reqParams['status']
