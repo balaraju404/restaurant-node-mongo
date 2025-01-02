@@ -10,6 +10,7 @@ const cart = require('./cart/cart.js')
 const order = require('./order/order')
 const dashboard = require('./dashboard')
 const notifications = require('./notifications')
+const device_token = require('./device_token')
 
 routes.use('/login', login);
 routes.use('/user', user)
@@ -22,5 +23,6 @@ routes.use('/cart', cart)
 routes.use('/order', order)
 routes.use('/dashboard', dashboard)
 routes.use('/notifications', notifications)
+routes.use('/device_token', device_token)
 
 module.exports = routes;

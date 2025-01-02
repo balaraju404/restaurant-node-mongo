@@ -10,6 +10,7 @@ global.TBL_USER_CART = "user_cart"
 global.TBL_ORDER_TRANSACTIONS = "order_transactions"
 global.TBL_SUB_TRANSACTIONS = "sub_transactions"
 global.TBL_NOTIFICATIONS = "notifications"
+global.TBL_DEVICE_TOKEN = "device_token"
 
 global.TIMEZONE = "Asia/Kolkata"
 

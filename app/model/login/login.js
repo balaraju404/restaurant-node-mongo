@@ -1,4 +1,5 @@
 const { getDb } = require('../../db-conn/db-conn');
+const { saveDeviceToken } = require('../device_token');
 
 exports.check = async (reqParams) => {
  try {
@@ -15,6 +16,15 @@ exports.check = async (reqParams) => {
     if (result['user_profile']) {
      const base64Image = result['user_profile'].toString('base64');
      result['user_profile'] = `data:image/png;base64,${base64Image}`;
+    }
+    if (result['role_id'] == 1 || result['role_id'] == 3) {
+     const params = { 'id': result['user_id'].toString(), 'device_token': reqParams['device_token'] }
+     const res = await saveDeviceToken(params)
+     if (res['insertedId']) {
+      result['device_token_id'] = res['insertedId'].toString()
+     } else {
+      result['device_token_id'] = ''
+     }
     }
     return { status: true, msg: 'Login successful', data: result };
    } else {
