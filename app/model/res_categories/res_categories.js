@@ -1,4 +1,5 @@
-const { ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const { getDb } = require("../../db-conn/db-conn");
 
 exports.add = async (reqParams) => {
