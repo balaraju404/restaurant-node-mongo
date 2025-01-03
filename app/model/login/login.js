@@ -18,10 +18,14 @@ exports.check = async (reqParams) => {
      result['user_profile'] = `data:image/png;base64,${base64Image}`;
     }
     if (result['role_id'] == 1 || result['role_id'] == 3) {
-     const params = { 'id': result['user_id'].toString(), 'device_token': reqParams['device_token'] }
-     const res = await saveDeviceToken(params)
-     if (res['insertedId']) {
-      result['device_token_id'] = res['insertedId'].toString()
+     if ("device_token" in reqParams && reqParams['device_token'].length > 0) {
+      const params = { 'id': result['user_id'].toString(), 'device_token': reqParams['device_token'] }
+      const res = await saveDeviceToken(params)
+      if (res['insertedId']) {
+       result['device_token_id'] = res['insertedId'].toString()
+      } else {
+       result['device_token_id'] = ''
+      }
      } else {
       result['device_token_id'] = ''
      }

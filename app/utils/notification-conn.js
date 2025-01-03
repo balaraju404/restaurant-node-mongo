@@ -27,7 +27,7 @@ async function getAccessToken() {
 }
 
 // Send the push notification to multiple device tokens using FCM API
-async function sendPushNotification(deviceTokens, msgContent = {}) {
+async function sendPushNotification(deviceTokens, msgContent = {}, data = {}) {
  try {
   const accessToken = await getAccessToken(); // Get OAuth token
 
@@ -42,10 +42,7 @@ async function sendPushNotification(deviceTokens, msgContent = {}) {
      title: msgContent['title'] || 'Hello from Firebase!',
      body: msgContent['message'] || 'This is a test notification sent from Firebase Cloud Messaging API v1.'
     },
-    data: {
-     key1: 'value1',
-     key2: 'value2'
-    }
+    data: data
    }
   };
 

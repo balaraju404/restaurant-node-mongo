@@ -24,7 +24,7 @@ exports.send = async (reqParams) => {
    const tokens = res['data'].map((m) => m['device_token'])
    if (tokens.length > 0) {
     const msgContent = { 'title': title, 'message': message }
-    await sendPushNotification(tokens,msgContent);
+    await sendPushNotification(tokens, msgContent, { id: ref_id });
    }
   }
   const notification_id = result['insertedId'].toString();
