@@ -10,7 +10,8 @@ async function getAccessToken() {
  try {
   const auth = new google.auth.GoogleAuth({
    keyFile: SERVICE_ACCOUNT_FILE,
-   scopes: ['https://www.googleapis.com/auth/firebase.messaging']
+   scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+   projectId: 'gbr-food-app',
   });
 
   // Get the OAuth 2.0 access token
@@ -26,21 +27,20 @@ async function getAccessToken() {
 }
 
 // Send the push notification to multiple device tokens using FCM API
-async function sendPushNotification(deviceTokens) {
+async function sendPushNotification(deviceTokens, msgContent = {}) {
  try {
   const accessToken = await getAccessToken(); // Get OAuth token
 
   // FCM HTTP v1 API endpoint
-  const url = `https://fcm.googleapis.com/v1/projects/${PROJECT_ID}/messages:send`; // Replace with your project ID
+  const url = `https://fcm.googleapis.com/v1/projects/${PROJECT_ID}/messages:send`;
 
   // Define the notification payload
   const message = {
    message: {
-    // Send to multiple device tokens
-    tokens: deviceTokens, // Array of device tokens
+    token: deviceTokens[0],
     notification: {
-     title: 'Hello from Firebase!',
-     body: 'This is a test notification sent from Firebase Cloud Messaging API v1.'
+     title: msgContent['title'] || 'Hello from Firebase!',
+     body: msgContent['message'] || 'This is a test notification sent from Firebase Cloud Messaging API v1.'
     },
     data: {
      key1: 'value1',
@@ -62,9 +62,5 @@ async function sendPushNotification(deviceTokens) {
   console.error('Error sending notification:', error.response ? error.response.data : error.message);
  }
 }
-
-// Replace this with the actual device token of your target device
-// const deviceToken = 'YOUR_DEVICE_FCM_TOKEN'; // Replace with your actual device token
-// sendPushNotification(deviceToken);
 
 module.exports = { sendPushNotification };

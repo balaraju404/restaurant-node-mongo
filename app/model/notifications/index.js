@@ -19,12 +19,12 @@ exports.send = async (reqParams) => {
   const result = await collection.insertOne(insertRec);
   const params = { 'id': receiver_id, 'status': 1 }
   const res = await getDeviceTokens(params);
-  console.log(res,params);
 
   if (res['status']) {
    const tokens = res['data'].map((m) => m['device_token'])
    if (tokens.length > 0) {
-    await sendPushNotification(tokens);
+    const msgContent = { 'title': title, 'message': message }
+    await sendPushNotification(tokens,msgContent);
    }
   }
   const notification_id = result['insertedId'].toString();
